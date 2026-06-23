@@ -1,0 +1,66 @@
+# ─────────────────────────────────────────────────────────────
+# Environment & local data
+# ─────────────────────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+/vault/
+**/.tmp-vault/
+/smoke-vault/
+
+# ─────────────────────────────────────────────────────────────
+# Java / Maven (backend)
+# ─────────────────────────────────────────────────────────────
+target/
+*.class
+*.jar
+*.war
+*.ear
+!**/.mvn/wrapper/maven-wrapper.jar
+hs_err_pid*
+replay_pid*
+.mvn/timing.properties
+
+# ─────────────────────────────────────────────────────────────
+# Node / TypeScript (frontend, mcp-server, e2e)
+# ─────────────────────────────────────────────────────────────
+node_modules/
+dist/
+build/
+.vite/
+*.tsbuildinfo
+coverage/
+.eslintcache
+
+# Playwright (e2e)
+test-results/
+playwright-report/
+playwright/.cache/
+
+# npm/yarn/pnpm debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ─────────────────────────────────────────────────────────────
+# Docker
+# ─────────────────────────────────────────────────────────────
+*.pid
+
+# ─────────────────────────────────────────────────────────────
+# IDE / editor
+# ─────────────────────────────────────────────────────────────
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+*.swp
+*.swo
+
+# ─────────────────────────────────────────────────────────────
+# OS
+# ─────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db

@@ -1,0 +1,30 @@
+services:
+  backend:
+    build: ./backend
+    expose:
+      - "7000"                       # internal only; reached via nginx and the MCP server
+    volumes:
+      - "${VAULT_PATH}:/vault"       # the Obsidian vault, host-mounted
+    environment:
+      VAULT_DIR: /vault
+      PORT: "7000"
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend                # multi-stage: vite build -> nginx (serves UI + /api proxy)
+    ports:
+      - "127.0.0.1:8080:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  mcp-server:
+    build: ./mcp-server
+    ports:
+      - "127.0.0.1:3001:3001"
+    environment:
+      BACKEND_URL: "http://backend:7000"
+      PORT: "3001"
+    depends_on:
+      - backend
+    restart: unless-stopped
