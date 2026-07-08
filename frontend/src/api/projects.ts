@@ -4,6 +4,7 @@ import type { Project, ProjectState } from './types';
 export interface ProjectInput {
   name: string;
   description?: string;
+  progress?: string;
   due?: string | null;
   state?: ProjectState;
 }

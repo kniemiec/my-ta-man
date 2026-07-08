@@ -1,36 +1,35 @@
 import { useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
-import type { Task, TaskState } from '../api/types';
-import { TASK_STATES } from '../api/types';
+import type { Project, ProjectState } from '../api/types';
+import { PROJECT_STATES } from '../api/types';
 import { stateLabel } from './StateTag';
 
 interface Props {
-  task: Task;
+  project: Project;
   onClose: () => void;
   onSave: (changes: {
     name?: string;
     description?: string;
     progress?: string;
     due?: string | null;
-    state?: TaskState;
+    state?: ProjectState;
   }) => void;
-  onDelete: () => void;
 }
 
-export function TaskDrawer({ task, onClose, onSave, onDelete }: Props) {
+export function ProjectDrawer({ project, onClose, onSave }: Props) {
   const [editing, setEditing] = useState(false);
-  const [name, setName] = useState(task.name);
-  const [description, setDescription] = useState(task.description ?? '');
-  const [progress, setProgress] = useState(task.progress ?? '');
-  const [due, setDue] = useState(task.due ?? '');
+  const [name, setName] = useState(project.name);
+  const [description, setDescription] = useState(project.description ?? '');
+  const [progress, setProgress] = useState(project.progress ?? '');
+  const [due, setDue] = useState(project.due ?? '');
 
   useEffect(() => {
-    setName(task.name);
-    setDescription(task.description ?? '');
-    setProgress(task.progress ?? '');
-    setDue(task.due ?? '');
+    setName(project.name);
+    setDescription(project.description ?? '');
+    setProgress(project.progress ?? '');
+    setDue(project.due ?? '');
     setEditing(false);
-  }, [task]);
+  }, [project]);
 
   function save() {
     onSave({
@@ -54,27 +53,27 @@ export function TaskDrawer({ task, onClose, onSave, onDelete }: Props) {
               className="w-full rounded border border-slate-300 px-2 py-1 text-lg font-semibold"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              aria-label="Task name"
+              aria-label="Project name"
             />
           ) : (
-            <h2 className="text-lg font-semibold">{task.name}</h2>
+            <h2 className="text-lg font-semibold">{project.name}</h2>
           )}
           <button className="ml-2 text-slate-400 hover:text-slate-700" onClick={onClose}>
             ✕
           </button>
         </div>
 
-        <div className="text-xs text-slate-500">{task.id}</div>
+        <div className="text-xs text-slate-500">{project.id}</div>
 
         <label className="flex flex-col gap-1 text-sm">
           <span className="font-medium text-slate-600">State</span>
           <select
             className="rounded border border-slate-300 px-2 py-1"
-            value={task.state}
-            onChange={(e) => onSave({ state: e.target.value as TaskState })}
+            value={project.state}
+            onChange={(e) => onSave({ state: e.target.value as ProjectState })}
             aria-label="State"
           >
-            {TASK_STATES.map((s) => (
+            {PROJECT_STATES.map((s) => (
               <option key={s} value={s}>
                 {stateLabel(s)}
               </option>
@@ -92,7 +91,7 @@ export function TaskDrawer({ task, onClose, onSave, onDelete }: Props) {
               onChange={(e) => setDue(e.target.value)}
             />
           ) : (
-            <span className="text-slate-700">{task.due ?? '—'}</span>
+            <span className="text-slate-700">{project.due ?? '—'}</span>
           )}
         </label>
 
@@ -107,8 +106,8 @@ export function TaskDrawer({ task, onClose, onSave, onDelete }: Props) {
             />
           ) : (
             <div className="prose prose-sm max-w-none rounded border border-slate-100 bg-slate-50 p-3">
-              {task.description ? (
-                <ReactMarkdown>{task.description}</ReactMarkdown>
+              {project.description ? (
+                <ReactMarkdown>{project.description}</ReactMarkdown>
               ) : (
                 <span className="text-slate-400">No description</span>
               )}
@@ -127,8 +126,8 @@ export function TaskDrawer({ task, onClose, onSave, onDelete }: Props) {
             />
           ) : (
             <div className="prose prose-sm max-w-none rounded border border-slate-100 bg-slate-50 p-3">
-              {task.progress ? (
-                <ReactMarkdown>{task.progress}</ReactMarkdown>
+              {project.progress ? (
+                <ReactMarkdown>{project.progress}</ReactMarkdown>
               ) : (
                 <span className="text-slate-400">No progress updates</span>
               )}
@@ -160,12 +159,6 @@ export function TaskDrawer({ task, onClose, onSave, onDelete }: Props) {
               Edit
             </button>
           )}
-          <button
-            className="ml-auto rounded border border-rose-300 px-3 py-1.5 text-sm text-rose-700 hover:bg-rose-50"
-            onClick={onDelete}
-          >
-            Delete
-          </button>
         </div>
       </div>
     </div>

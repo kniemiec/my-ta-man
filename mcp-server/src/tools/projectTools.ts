@@ -26,6 +26,7 @@ export function registerProjectTools(server: McpServer, client: BackendClient) {
     {
       name: z.string().describe('Project name'),
       description: z.string().optional().describe('Background/rationale (markdown)'),
+      progress: z.string().optional().describe('Progress notes (markdown)'),
       due: z.string().optional().describe('Due date YYYY-MM-DD'),
       state: PROJECT_STATE.optional(),
     },
@@ -39,6 +40,7 @@ export function registerProjectTools(server: McpServer, client: BackendClient) {
       id: z.string(),
       name: z.string().optional(),
       description: z.string().optional(),
+      progress: z.string().optional().describe('Progress notes (markdown)'),
       due: z.string().nullable().optional().describe('YYYY-MM-DD, or null to clear'),
       state: PROJECT_STATE.optional(),
     },

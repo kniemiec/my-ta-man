@@ -21,7 +21,7 @@ export function ProjectsPage() {
     reload();
   }, []);
 
-  async function create(input: { name: string; description?: string }) {
+  async function create(input: { name: string; description?: string; progress?: string }) {
     await projectsApi.create(input);
     reload();
   }

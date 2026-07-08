@@ -4,6 +4,7 @@ import type { Task, TaskState } from './types';
 export interface TaskInput {
   name: string;
   description?: string;
+  progress?: string;
   due?: string | null;
   state?: TaskState;
   projectId?: string;

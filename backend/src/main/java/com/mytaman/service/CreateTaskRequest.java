@@ -8,6 +8,7 @@ import java.time.LocalDate;
 public class CreateTaskRequest {
     public String name;
     public String description;
+    public String progress;
     public LocalDate due;
     public TaskState state;
     public String projectId;

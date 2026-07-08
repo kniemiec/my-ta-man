@@ -18,6 +18,7 @@ public class Task {
     private String id;
     private String name;
     private String description;
+    private String progress;
     private LocalDate due;
     private TaskState state;
     private LocalDate created;
@@ -50,6 +51,14 @@ public class Task {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getProgress() {
+        return progress;
+    }
+
+    public void setProgress(String progress) {
+        this.progress = progress;
     }
 
     public LocalDate getDue() {

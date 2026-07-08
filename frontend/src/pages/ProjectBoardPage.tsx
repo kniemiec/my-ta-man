@@ -2,9 +2,10 @@ import { useCallback, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { projectsApi } from '../api/projects';
 import { tasksApi } from '../api/tasks';
-import type { Project, Task, TaskState } from '../api/types';
+import type { Project, ProjectState, Task, TaskState } from '../api/types';
 import { INBOX_ID } from '../api/types';
 import { Board } from '../components/Board';
+import { ProjectDrawer } from '../components/ProjectDrawer';
 import { StateTag } from '../components/StateTag';
 import { TaskDrawer } from '../components/TaskDrawer';
 
@@ -15,6 +16,7 @@ export function ProjectBoardPage({ inbox = false }: { inbox?: boolean }) {
   const [project, setProject] = useState<Project | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [selected, setSelected] = useState<Task | null>(null);
+  const [editingProject, setEditingProject] = useState(false);
   const [newName, setNewName] = useState('');
   const [error, setError] = useState<string | null>(null);
 
@@ -49,12 +51,26 @@ export function ProjectBoardPage({ inbox = false }: { inbox?: boolean }) {
   async function saveTask(changes: {
     name?: string;
     description?: string;
+    progress?: string;
     due?: string | null;
     state?: TaskState;
   }) {
     if (!selected) return;
     const updated = await tasksApi.update(selected.id, changes);
     setSelected(updated);
+    reload();
+  }
+
+  async function saveProject(changes: {
+    name?: string;
+    description?: string;
+    progress?: string;
+    due?: string | null;
+    state?: ProjectState;
+  }) {
+    if (!project) return;
+    const updated = await projectsApi.update(project.id, changes);
+    setProject(updated);
     reload();
   }
 
@@ -76,6 +92,14 @@ export function ProjectBoardPage({ inbox = false }: { inbox?: boolean }) {
           {inbox ? 'Inbox' : (project?.name ?? projectId)}
         </h1>
         {project && <StateTag state={project.state} />}
+        {!inbox && project && (
+          <button
+            className="ml-auto rounded border border-slate-300 px-3 py-1.5 text-sm hover:bg-slate-50"
+            onClick={() => setEditingProject(true)}
+          >
+            Edit project
+          </button>
+        )}
       </header>
 
       {!inbox && project?.description && (
@@ -105,6 +129,14 @@ export function ProjectBoardPage({ inbox = false }: { inbox?: boolean }) {
           onClose={() => setSelected(null)}
           onSave={saveTask}
           onDelete={deleteTask}
+        />
+      )}
+
+      {editingProject && project && (
+        <ProjectDrawer
+          project={project}
+          onClose={() => setEditingProject(false)}
+          onSave={saveProject}
         />
       )}
     </div>
