@@ -5,6 +5,7 @@ export interface Task {
   id: string;
   name: string;
   description?: string;
+  progress?: string;
   due?: string;
   state: string;
   created?: string;
@@ -15,6 +16,7 @@ export interface Project {
   id: string;
   name: string;
   description?: string;
+  progress?: string;
   due?: string;
   state: string;
   created?: string;

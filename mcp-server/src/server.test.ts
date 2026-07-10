@@ -65,6 +65,26 @@ describe('MCP tools', () => {
     expect(backend.createTask).toHaveBeenCalledWith({ name: 'Fix', projectId: 'PROJ-1' });
   });
 
+  it('create_task forwards progress', async () => {
+    await call('create_task', { name: 'Fix', progress: 'Reproduced.' });
+    expect(backend.createTask).toHaveBeenCalledWith({ name: 'Fix', progress: 'Reproduced.' });
+  });
+
+  it('update_task forwards progress', async () => {
+    await call('update_task', { id: 'TASK-1', progress: 'In review.' });
+    expect(backend.updateTask).toHaveBeenCalledWith('TASK-1', { progress: 'In review.' });
+  });
+
+  it('create_project forwards progress', async () => {
+    await call('create_project', { name: 'Alpha', progress: 'Kickoff done.' });
+    expect(backend.createProject).toHaveBeenCalledWith({ name: 'Alpha', progress: 'Kickoff done.' });
+  });
+
+  it('update_project forwards progress', async () => {
+    await call('update_project', { id: 'PROJ-1', progress: 'Milestone 1.' });
+    expect(backend.updateProject).toHaveBeenCalledWith('PROJ-1', { progress: 'Milestone 1.' });
+  });
+
   it('list_tasks passes the project filter', async () => {
     await call('list_tasks', { project: 'PROJ-3' });
     expect(backend.listTasks).toHaveBeenCalledWith('PROJ-3');

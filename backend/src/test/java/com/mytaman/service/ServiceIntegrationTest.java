@@ -117,6 +117,98 @@ class ServiceIntegrationTest {
     }
 
     @Test
+    void createTaskWritesDescriptionAndProgressSections() throws IOException {
+        CreateTaskRequest t = new CreateTaskRequest();
+        t.name = "Fix login bug";
+        t.description = "The login form throws a 500.";
+        t.progress = "- [x] Reproduced";
+        Task created = tasks.create(t);
+
+        assertEquals("The login form throws a 500.", created.getDescription());
+        assertEquals("- [x] Reproduced", created.getProgress());
+
+        Path file = paths.inboxDir().resolve("fix-login-bug.md");
+        String content = Files.readString(file);
+        assertTrue(content.contains("## Description"));
+        assertTrue(content.contains("## Progress"));
+    }
+
+    @Test
+    void patchProgressLeavesDescriptionUntouched() {
+        CreateTaskRequest t = new CreateTaskRequest();
+        t.name = "Write docs";
+        t.description = "The original description.";
+        String id = tasks.create(t).getId();
+
+        Task patched = tasks.patch(id, Map.of("progress", "Drafted the intro."));
+        assertEquals("Drafted the intro.", patched.getProgress());
+        assertEquals("The original description.", patched.getDescription());
+    }
+
+    @Test
+    void patchDescriptionLeavesProgressUntouched() {
+        CreateTaskRequest t = new CreateTaskRequest();
+        t.name = "Write docs";
+        t.progress = "Halfway done.";
+        String id = tasks.create(t).getId();
+
+        Task patched = tasks.patch(id, Map.of("description", "Now with a description."));
+        assertEquals("Now with a description.", patched.getDescription());
+        assertEquals("Halfway done.", patched.getProgress());
+    }
+
+    @Test
+    void legacyHeadinglessBodyReadsAsDescriptionThenRewraps() throws IOException {
+        // Simulate a pre-existing task whose body is raw text with no section headings,
+        // plus an unrelated user-added section that must survive a progress edit.
+        Files.createDirectories(paths.inboxDir());
+        Path file = paths.inboxDir().resolve("legacy.md");
+        Files.writeString(file, """
+                ---
+                id: TASK-50
+                name: Legacy
+                state: new
+                created: 2026-01-01
+                ---
+
+                Plain legacy body.
+
+                ## Notes
+
+                Keep me.
+                """);
+
+        Task read = tasks.get("TASK-50");
+        assertEquals("Plain legacy body.", read.getDescription());
+        assertNull(read.getProgress());
+
+        tasks.patch("TASK-50", Map.of("progress", "Now tracking progress."));
+        String content = Files.readString(file);
+        assertTrue(content.contains("## Description"));
+        assertTrue(content.contains("## Progress"));
+        // The unknown user section is preserved across the patch.
+        assertTrue(content.contains("## Notes"));
+        assertTrue(content.contains("Keep me."));
+    }
+
+    @Test
+    void projectSupportsProgress() {
+        CreateProjectRequest p = new CreateProjectRequest();
+        p.name = "Alpha";
+        p.description = "Project rationale.";
+        p.progress = "Kickoff done.";
+        String id = projects.create(p).getId();
+
+        Project read = projects.get(id);
+        assertEquals("Project rationale.", read.getDescription());
+        assertEquals("Kickoff done.", read.getProgress());
+
+        Project patched = projects.patch(id, Map.of("progress", "Milestone 1 reached."));
+        assertEquals("Milestone 1 reached.", patched.getProgress());
+        assertEquals("Project rationale.", patched.getDescription());
+    }
+
+    @Test
     void clearingDueRemovesTheField() {
         CreateTaskRequest t = new CreateTaskRequest();
         t.name = "Task";

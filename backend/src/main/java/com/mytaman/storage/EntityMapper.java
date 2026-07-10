@@ -7,6 +7,7 @@ import com.mytaman.model.TaskState;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.Map;
 
 /**
  * Converts between {@link Frontmatter} (raw YAML map + body) and the domain models.
@@ -27,7 +28,9 @@ public final class EntityMapper {
         t.setState(parseTaskState(str(fm, "state")));
         t.setDue(date(fm, "due"));
         t.setCreated(date(fm, "created"));
-        t.setDescription(fm.body().strip().isEmpty() ? null : fm.body().strip());
+        Map<String, String> sections = BodyParser.parse(fm.body());
+        t.setDescription(blankToNull(sections.get(BodyParser.DESCRIPTION)));
+        t.setProgress(blankToNull(sections.get(BodyParser.PROGRESS)));
         t.setProjectId(projectId);
         return t;
     }
@@ -39,8 +42,14 @@ public final class EntityMapper {
         p.setState(parseProjectState(str(fm, "state")));
         p.setDue(date(fm, "due"));
         p.setCreated(date(fm, "created"));
-        p.setDescription(fm.body().strip().isEmpty() ? null : fm.body().strip());
+        Map<String, String> sections = BodyParser.parse(fm.body());
+        p.setDescription(blankToNull(sections.get(BodyParser.DESCRIPTION)));
+        p.setProgress(blankToNull(sections.get(BodyParser.PROGRESS)));
         return p;
+    }
+
+    private static String blankToNull(String s) {
+        return (s == null || s.isBlank()) ? null : s;
     }
 
     private static String str(Frontmatter fm, String key) {

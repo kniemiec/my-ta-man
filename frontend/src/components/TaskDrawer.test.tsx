@@ -8,6 +8,7 @@ const task: Task = {
   id: 'TASK-1',
   name: 'Write docs',
   description: 'Original body.',
+  progress: 'Halfway there.',
   state: 'new',
   projectId: 'PROJ-1',
 };
@@ -30,6 +31,26 @@ describe('TaskDrawer', () => {
 
     expect(onSave).toHaveBeenCalledWith(
       expect.objectContaining({ description: 'Updated body.' }),
+    );
+  });
+
+  it('renders the progress as markdown', () => {
+    render(<TaskDrawer task={task} onClose={vi.fn()} onSave={vi.fn()} onDelete={vi.fn()} />);
+    expect(screen.getByText('Halfway there.')).toBeInTheDocument();
+  });
+
+  it('edits and saves the progress', async () => {
+    const onSave = vi.fn();
+    render(<TaskDrawer task={task} onClose={vi.fn()} onSave={onSave} onDelete={vi.fn()} />);
+
+    await userEvent.click(screen.getByRole('button', { name: 'Edit' }));
+    const textarea = screen.getByLabelText('Progress');
+    await userEvent.clear(textarea);
+    await userEvent.type(textarea, 'Now in review.');
+    await userEvent.click(screen.getByRole('button', { name: 'Save' }));
+
+    expect(onSave).toHaveBeenCalledWith(
+      expect.objectContaining({ progress: 'Now in review.' }),
     );
   });
 

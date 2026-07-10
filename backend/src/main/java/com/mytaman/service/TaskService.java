@@ -2,6 +2,7 @@ package com.mytaman.service;
 
 import com.mytaman.model.Task;
 import com.mytaman.model.TaskState;
+import com.mytaman.storage.BodyParser;
 import com.mytaman.storage.EntityMapper;
 import com.mytaman.storage.Frontmatter;
 import com.mytaman.storage.IdSequence;
@@ -24,7 +25,7 @@ import java.util.Set;
  */
 public final class TaskService {
 
-    private static final Set<String> PATCHABLE = Set.of("name", "description", "due", "state");
+    private static final Set<String> PATCHABLE = Set.of("name", "description", "progress", "due", "state");
 
     private final TaskRepository tasks;
     private final IdSequence ids;
@@ -67,8 +68,10 @@ public final class TaskService {
         }
         meta.put("created", LocalDate.now().toString());
 
-        String body = req.description != null ? req.description : "";
-        Frontmatter fm = new Frontmatter(meta, body);
+        Map<String, String> sections = new LinkedHashMap<>();
+        sections.put(BodyParser.DESCRIPTION, req.description);
+        sections.put(BodyParser.PROGRESS, req.progress);
+        Frontmatter fm = new Frontmatter(meta, BodyParser.serialize(sections));
         return tasks.create(projectId, VaultPaths.slug(req.name), fm);
     }
 
@@ -107,9 +110,15 @@ public final class TaskService {
                 meta.put("due", parseDate(asString(due)).toString());
             }
         }
-        if (changes.containsKey("description")) {
-            Object desc = changes.get("description");
-            body = desc == null ? "" : asString(desc);
+        if (changes.containsKey("description") || changes.containsKey("progress")) {
+            Map<String, String> sections = BodyParser.parse(body);
+            if (changes.containsKey("description")) {
+                sections.put(BodyParser.DESCRIPTION, asString(changes.get("description")));
+            }
+            if (changes.containsKey("progress")) {
+                sections.put(BodyParser.PROGRESS, asString(changes.get("progress")));
+            }
+            body = BodyParser.serialize(sections);
         }
 
         MarkdownStore.write(file, new Frontmatter(meta, body));

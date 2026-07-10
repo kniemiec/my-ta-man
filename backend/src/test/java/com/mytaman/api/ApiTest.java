@@ -50,21 +50,34 @@ class ApiTest {
         String projectId = (String) proj.json().get("id");
         assertEquals("PROJ-1", projectId);
 
-        // Create task in project
-        Response task = post("/api/tasks", Map.of("name", "Fix bug", "projectId", projectId));
+        // Create task in project, with both body sections
+        Response task = post("/api/tasks", Map.of(
+                "name", "Fix bug", "projectId", projectId,
+                "description", "Throws a 500.", "progress", "Reproduced."));
         assertEquals(201, task.status());
         String taskId = (String) task.json().get("id");
+        assertEquals("Throws a 500.", task.json().get("description"));
+        assertEquals("Reproduced.", task.json().get("progress"));
 
-        // The file exists on disk and is a valid Obsidian note
+        // The file exists on disk and is a valid Obsidian note with both sections
         Path file = vault.resolve("alpha").resolve("fix-bug.md");
         assertTrue(Files.exists(file));
-        assertTrue(Files.readString(file).contains("state: new"));
+        String onDisk = Files.readString(file);
+        assertTrue(onDisk.contains("state: new"));
+        assertTrue(onDisk.contains("## Description"));
+        assertTrue(onDisk.contains("## Progress"));
 
         // Patch state -> in-progress
         Response patched = patch("/api/tasks/" + taskId, Map.of("state", "in-progress"));
         assertEquals(200, patched.status());
         assertEquals("in-progress", patched.json().get("state"));
         assertTrue(Files.readString(file).contains("state: in-progress"));
+
+        // Patch progress -> persisted and readable, description untouched
+        Response progressed = patch("/api/tasks/" + taskId, Map.of("progress", "Fix in review."));
+        assertEquals(200, progressed.status());
+        assertEquals("Fix in review.", progressed.json().get("progress"));
+        assertEquals("Throws a 500.", progressed.json().get("description"));
 
         // List tasks by project
         Response list = get("/api/tasks?project=" + projectId);

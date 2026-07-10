@@ -17,6 +17,7 @@ public class Project {
     private String id;
     private String name;
     private String description;
+    private String progress;
     private LocalDate due;
     private ProjectState state;
     private LocalDate created;
@@ -52,6 +53,14 @@ public class Project {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getProgress() {
+        return progress;
+    }
+
+    public void setProgress(String progress) {
+        this.progress = progress;
     }
 
     public LocalDate getDue() {

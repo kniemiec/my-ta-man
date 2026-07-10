@@ -32,6 +32,7 @@ export function registerTaskTools(server: McpServer, client: BackendClient) {
     {
       name: z.string().describe('Task name'),
       description: z.string().optional().describe('Details (markdown)'),
+      progress: z.string().optional().describe('Progress notes (markdown)'),
       due: z.string().optional().describe('Due date YYYY-MM-DD'),
       state: TASK_STATE.optional(),
       projectId: z.string().optional().describe('Target project id, or "inbox"'),
@@ -46,6 +47,7 @@ export function registerTaskTools(server: McpServer, client: BackendClient) {
       id: z.string(),
       name: z.string().optional(),
       description: z.string().optional(),
+      progress: z.string().optional().describe('Progress notes (markdown)'),
       due: z.string().nullable().optional().describe('YYYY-MM-DD, or null to clear'),
       state: TASK_STATE.optional(),
     },

@@ -23,6 +23,7 @@ export interface Task {
   id: string;
   name: string;
   description?: string;
+  progress?: string;
   due?: string;
   state: TaskState;
   created?: string;
@@ -33,6 +34,7 @@ export interface Project {
   id: string;
   name: string;
   description?: string;
+  progress?: string;
   due?: string;
   state: ProjectState;
   created?: string;

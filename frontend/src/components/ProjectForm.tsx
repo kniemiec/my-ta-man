@@ -1,20 +1,31 @@
 import { useState } from 'react';
 
 interface Props {
-  onCreate: (input: { name: string; description?: string; due?: string | null }) => void;
+  onCreate: (input: {
+    name: string;
+    description?: string;
+    progress?: string;
+    due?: string | null;
+  }) => void;
 }
 
 export function ProjectForm({ onCreate }: Props) {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+  const [progress, setProgress] = useState('');
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!name.trim()) return;
-    onCreate({ name: name.trim(), description: description.trim() || undefined });
+    onCreate({
+      name: name.trim(),
+      description: description.trim() || undefined,
+      progress: progress.trim() || undefined,
+    });
     setName('');
     setDescription('');
+    setProgress('');
     setOpen(false);
   }
 
@@ -45,6 +56,13 @@ export function ProjectForm({ onCreate }: Props) {
         value={description}
         onChange={(e) => setDescription(e.target.value)}
         aria-label="Project description"
+      />
+      <textarea
+        className="rounded border border-slate-300 px-2 py-1"
+        placeholder="Progress (optional)"
+        value={progress}
+        onChange={(e) => setProgress(e.target.value)}
+        aria-label="Project progress"
       />
       <div className="flex gap-2">
         <button className="rounded bg-sky-600 px-3 py-1.5 text-sm font-medium text-white" type="submit">
