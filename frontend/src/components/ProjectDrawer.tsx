@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import type { Project, ProjectState } from '../api/types';
-import { PROJECT_STATES } from '../api/types';
+import { PROJECT_STATES_WITH_ARCHIVED } from '../api/types';
 import { stateLabel } from './StateTag';
 
 interface Props {
@@ -73,7 +73,7 @@ export function ProjectDrawer({ project, onClose, onSave }: Props) {
             onChange={(e) => onSave({ state: e.target.value as ProjectState })}
             aria-label="State"
           >
-            {PROJECT_STATES.map((s) => (
+            {PROJECT_STATES_WITH_ARCHIVED.map((s) => (
               <option key={s} value={s}>
                 {stateLabel(s)}
               </option>
@@ -152,12 +152,20 @@ export function ProjectDrawer({ project, onClose, onSave }: Props) {
               </button>
             </>
           ) : (
-            <button
-              className="rounded border border-slate-300 px-3 py-1.5 text-sm hover:bg-slate-50"
-              onClick={() => setEditing(true)}
-            >
-              Edit
-            </button>
+            <>
+              <button
+                className="rounded border border-slate-300 px-3 py-1.5 text-sm hover:bg-slate-50"
+                onClick={() => setEditing(true)}
+              >
+                Edit
+              </button>
+              <button
+                className="rounded border border-slate-300 px-3 py-1.5 text-sm hover:bg-slate-50"
+                onClick={() => onSave({ state: project.state === 'archived' ? 'new' : 'archived' })}
+              >
+                {project.state === 'archived' ? 'Unarchive' : 'Archive'}
+              </button>
+            </>
           )}
         </div>
       </div>

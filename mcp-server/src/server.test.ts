@@ -95,6 +95,16 @@ describe('MCP tools', () => {
     expect(backend.updateTask).toHaveBeenCalledWith('TASK-1', { state: 'in-progress' });
   });
 
+  it('set_task_state accepts and forwards the archived state', async () => {
+    await call('set_task_state', { id: 'TASK-1', state: 'archived' });
+    expect(backend.updateTask).toHaveBeenCalledWith('TASK-1', { state: 'archived' });
+  });
+
+  it('update_project accepts and forwards the archived state', async () => {
+    await call('update_project', { id: 'PROJ-1', state: 'archived' });
+    expect(backend.updateProject).toHaveBeenCalledWith('PROJ-1', { state: 'archived' });
+  });
+
   it('update_task strips id and forwards the rest', async () => {
     await call('update_task', { id: 'TASK-1', name: 'New name' });
     expect(backend.updateTask).toHaveBeenCalledWith('TASK-1', { name: 'New name' });

@@ -61,6 +61,34 @@ describe('TaskDrawer', () => {
     expect(onSave).toHaveBeenCalledWith({ state: 'in-progress' });
   });
 
+  it('archives via the dropdown', async () => {
+    const onSave = vi.fn();
+    render(<TaskDrawer task={task} onClose={vi.fn()} onSave={onSave} onDelete={vi.fn()} />);
+    await userEvent.selectOptions(screen.getByLabelText('State'), 'archived');
+    expect(onSave).toHaveBeenCalledWith({ state: 'archived' });
+  });
+
+  it('archives via the Archive button', async () => {
+    const onSave = vi.fn();
+    render(<TaskDrawer task={task} onClose={vi.fn()} onSave={onSave} onDelete={vi.fn()} />);
+    await userEvent.click(screen.getByRole('button', { name: 'Archive' }));
+    expect(onSave).toHaveBeenCalledWith({ state: 'archived' });
+  });
+
+  it('offers Unarchive for an archived task', async () => {
+    const onSave = vi.fn();
+    render(
+      <TaskDrawer
+        task={{ ...task, state: 'archived' }}
+        onClose={vi.fn()}
+        onSave={onSave}
+        onDelete={vi.fn()}
+      />,
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'Unarchive' }));
+    expect(onSave).toHaveBeenCalledWith({ state: 'new' });
+  });
+
   it('fires onDelete', async () => {
     const onDelete = vi.fn();
     render(<TaskDrawer task={task} onClose={vi.fn()} onSave={vi.fn()} onDelete={onDelete} />);

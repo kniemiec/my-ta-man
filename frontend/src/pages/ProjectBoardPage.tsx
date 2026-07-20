@@ -17,6 +17,7 @@ export function ProjectBoardPage({ inbox = false }: { inbox?: boolean }) {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [selected, setSelected] = useState<Task | null>(null);
   const [editingProject, setEditingProject] = useState(false);
+  const [showArchived, setShowArchived] = useState(false);
   const [newName, setNewName] = useState('');
   const [error, setError] = useState<string | null>(null);
 
@@ -108,20 +109,30 @@ export function ProjectBoardPage({ inbox = false }: { inbox?: boolean }) {
 
       {error && <div className="mb-4 rounded bg-rose-100 p-3 text-sm text-rose-800">{error}</div>}
 
-      <form onSubmit={addTask} className="mb-6 flex gap-2">
-        <input
-          className="w-80 rounded border border-slate-300 px-3 py-2 text-sm"
-          placeholder="New task name…"
-          value={newName}
-          onChange={(e) => setNewName(e.target.value)}
-          aria-label="New task name"
-        />
-        <button className="rounded bg-sky-600 px-4 py-2 text-sm font-medium text-white hover:bg-sky-700">
-          Add task
-        </button>
-      </form>
+      <div className="mb-6 flex items-center gap-4">
+        <form onSubmit={addTask} className="flex gap-2">
+          <input
+            className="w-80 rounded border border-slate-300 px-3 py-2 text-sm"
+            placeholder="New task name…"
+            value={newName}
+            onChange={(e) => setNewName(e.target.value)}
+            aria-label="New task name"
+          />
+          <button className="rounded bg-sky-600 px-4 py-2 text-sm font-medium text-white hover:bg-sky-700">
+            Add task
+          </button>
+        </form>
+        <label className="ml-auto flex items-center gap-2 text-sm text-slate-600">
+          <input
+            type="checkbox"
+            checked={showArchived}
+            onChange={(e) => setShowArchived(e.target.checked)}
+          />
+          Show archived
+        </label>
+      </div>
 
-      <Board tasks={tasks} onMove={moveState} onOpen={setSelected} />
+      <Board tasks={tasks} onMove={moveState} onOpen={setSelected} showArchived={showArchived} />
 
       {selected && (
         <TaskDrawer

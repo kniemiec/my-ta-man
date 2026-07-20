@@ -11,7 +11,8 @@ import java.util.Arrays;
 public enum ProjectState {
     NEW("new"),
     IN_PROGRESS("in-progress"),
-    COMPLETED("completed");
+    COMPLETED("completed"),
+    ARCHIVED("archived");
 
     private final String wire;
 

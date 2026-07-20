@@ -3,7 +3,7 @@ import { z } from 'zod';
 import type { BackendClient } from '../backendClient.js';
 import { run } from './result.js';
 
-const PROJECT_STATE = z.enum(['new', 'in-progress', 'completed']);
+const PROJECT_STATE = z.enum(['new', 'in-progress', 'completed', 'archived']);
 
 export function registerProjectTools(server: McpServer, client: BackendClient) {
   server.tool(

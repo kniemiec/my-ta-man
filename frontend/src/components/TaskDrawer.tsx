@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import type { Task, TaskState } from '../api/types';
-import { TASK_STATES } from '../api/types';
+import { TASK_STATES_WITH_ARCHIVED } from '../api/types';
 import { stateLabel } from './StateTag';
 
 interface Props {
@@ -74,7 +74,7 @@ export function TaskDrawer({ task, onClose, onSave, onDelete }: Props) {
             onChange={(e) => onSave({ state: e.target.value as TaskState })}
             aria-label="State"
           >
-            {TASK_STATES.map((s) => (
+            {TASK_STATES_WITH_ARCHIVED.map((s) => (
               <option key={s} value={s}>
                 {stateLabel(s)}
               </option>
@@ -153,12 +153,20 @@ export function TaskDrawer({ task, onClose, onSave, onDelete }: Props) {
               </button>
             </>
           ) : (
-            <button
-              className="rounded border border-slate-300 px-3 py-1.5 text-sm hover:bg-slate-50"
-              onClick={() => setEditing(true)}
-            >
-              Edit
-            </button>
+            <>
+              <button
+                className="rounded border border-slate-300 px-3 py-1.5 text-sm hover:bg-slate-50"
+                onClick={() => setEditing(true)}
+              >
+                Edit
+              </button>
+              <button
+                className="rounded border border-slate-300 px-3 py-1.5 text-sm hover:bg-slate-50"
+                onClick={() => onSave({ state: task.state === 'archived' ? 'new' : 'archived' })}
+              >
+                {task.state === 'archived' ? 'Unarchive' : 'Archive'}
+              </button>
+            </>
           )}
           <button
             className="ml-auto rounded border border-rose-300 px-3 py-1.5 text-sm text-rose-700 hover:bg-rose-50"

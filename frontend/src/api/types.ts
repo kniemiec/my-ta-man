@@ -5,10 +5,12 @@ export type TaskState =
   | 'in-progress'
   | 'blocked'
   | 'in-review'
-  | 'completed';
+  | 'completed'
+  | 'archived';
 
-export type ProjectState = 'new' | 'in-progress' | 'completed';
+export type ProjectState = 'new' | 'in-progress' | 'completed' | 'archived';
 
+/** Active states — the default board columns / visible project set (archived excluded). */
 export const TASK_STATES: TaskState[] = [
   'new',
   'in-progress',
@@ -18,6 +20,11 @@ export const TASK_STATES: TaskState[] = [
 ];
 
 export const PROJECT_STATES: ProjectState[] = ['new', 'in-progress', 'completed'];
+
+/** All states including `archived` — used by state dropdowns and the toggled board. */
+export const TASK_STATES_WITH_ARCHIVED: TaskState[] = [...TASK_STATES, 'archived'];
+
+export const PROJECT_STATES_WITH_ARCHIVED: ProjectState[] = [...PROJECT_STATES, 'archived'];
 
 export interface Task {
   id: string;

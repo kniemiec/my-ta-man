@@ -6,6 +6,7 @@ const COLORS: Record<string, string> = {
   blocked: 'bg-rose-200 text-rose-800',
   'in-review': 'bg-violet-200 text-violet-800',
   completed: 'bg-emerald-200 text-emerald-800',
+  archived: 'bg-slate-300 text-slate-600',
 };
 
 const LABELS: Record<string, string> = {
@@ -14,6 +15,7 @@ const LABELS: Record<string, string> = {
   blocked: 'Blocked',
   'in-review': 'In Review',
   completed: 'Completed',
+  archived: 'Archived',
 };
 
 export function StateTag({ state }: { state: TaskState | ProjectState }) {

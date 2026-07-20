@@ -209,6 +209,36 @@ class ServiceIntegrationTest {
     }
 
     @Test
+    void archiveAndUnarchiveTaskPreservesBody() {
+        CreateTaskRequest t = new CreateTaskRequest();
+        t.name = "Old task";
+        t.description = "Body to keep.";
+        String id = tasks.create(t).getId();
+
+        Task archived = tasks.patch(id, Map.of("state", "archived"));
+        assertEquals(TaskState.ARCHIVED, archived.getState());
+        assertEquals("Body to keep.", archived.getDescription());
+
+        // Unarchive: archived is a regular state, so any other value restores an active state.
+        Task unarchived = tasks.patch(id, Map.of("state", "new"));
+        assertEquals(TaskState.NEW, unarchived.getState());
+        assertEquals("Body to keep.", unarchived.getDescription());
+    }
+
+    @Test
+    void archiveProjectWritesArchivedState() throws IOException {
+        CreateProjectRequest p = new CreateProjectRequest();
+        p.name = "Alpha";
+        String id = projects.create(p).getId();
+
+        Project archived = projects.patch(id, Map.of("state", "archived"));
+        assertEquals(ProjectState.ARCHIVED, archived.getState());
+
+        Path file = vault.resolve("alpha").resolve("_project.md");
+        assertTrue(Files.readString(file).contains("state: archived"));
+    }
+
+    @Test
     void clearingDueRemovesTheField() {
         CreateTaskRequest t = new CreateTaskRequest();
         t.name = "Task";
