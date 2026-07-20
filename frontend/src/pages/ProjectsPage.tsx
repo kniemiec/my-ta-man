@@ -59,7 +59,11 @@ export function ProjectsPage() {
           <ProjectCard key={p.id} project={p} />
         ))}
         {visibleProjects.length === 0 && !error && (
-          <p className="text-slate-400">No projects yet. Create one to get started.</p>
+          <p className="text-slate-400">
+            {projects.length === 0
+              ? 'No projects yet. Create one to get started.'
+              : 'No active projects — toggle “Show archived” to see archived ones.'}
+          </p>
         )}
       </div>
     </div>
