@@ -40,4 +40,24 @@ describe('ProjectDrawer', () => {
     await userEvent.selectOptions(screen.getByLabelText('State'), 'in-progress');
     expect(onSave).toHaveBeenCalledWith({ state: 'in-progress' });
   });
+
+  it('archives via the Archive button', async () => {
+    const onSave = vi.fn();
+    render(<ProjectDrawer project={project} onClose={vi.fn()} onSave={onSave} />);
+    await userEvent.click(screen.getByRole('button', { name: 'Archive' }));
+    expect(onSave).toHaveBeenCalledWith({ state: 'archived' });
+  });
+
+  it('offers Unarchive for an archived project', async () => {
+    const onSave = vi.fn();
+    render(
+      <ProjectDrawer
+        project={{ ...project, state: 'archived' }}
+        onClose={vi.fn()}
+        onSave={onSave}
+      />,
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'Unarchive' }));
+    expect(onSave).toHaveBeenCalledWith({ state: 'new' });
+  });
 });

@@ -5,8 +5,9 @@
 A personal, single-user, simplified Linear: **Projects** that group **Tasks**, managed through a clean web UI and also through an LLM via MCP. The defining constraint is that the **datastore is a folder of markdown files that doubles as an Obsidian vault** — so the same data can be edited by hand in Obsidian and by the app, with no divergence. Everything must run from a single `docker-compose up`, be decomposed into small testable units, and let the storage location be configured.
 
 ### Domain model
-- **Task**: `id`, `name`, `description`, `due` (optional), `state` ∈ {`new`, `in-progress`, `blocked`, `in-review`, `completed`}. All transitions allowed. No subtasks.
-- **Project**: `id`, `name`, `description`, `due` (optional), `state` ∈ {`new`, `in-progress`, `completed`}, plus its list of tasks (derived from folder contents).
+- **Task**: `id`, `name`, `description`, `due` (optional), `state` ∈ {`new`, `in-progress`, `blocked`, `in-review`, `completed`, `archived`}. All transitions allowed. No subtasks.
+- **Project**: `id`, `name`, `description`, `due` (optional), `state` ∈ {`new`, `in-progress`, `completed`, `archived`}, plus its list of tasks (derived from folder contents).
+- **Archived** is a terminal-ish state used to hide finished/abandoned items from the active views without deleting them. It is a regular `state` value (archiving overwrites the prior state), and it is **hidden by default** in the UI behind a "Show archived" toggle — the board omits the `archived` column and the projects grid omits archived projects until toggled on. Per-entity: archiving a project does not cascade to its tasks.
 - No assignees, no auth (local single-user).
 
 ---
@@ -24,7 +25,7 @@ A personal, single-user, simplified Linear: **Projects** that group **Tasks**, m
 | **Deletion** | Delete task = remove file. Delete project = **409 if folder still has tasks** (no accidental mass loss). |
 | **Backend** | Java 21 + **Javalin** (embedded Jetty) + Jackson (JSON) + SnakeYAML (frontmatter). Fat jar, `eclipse-temurin:21-jre-alpine`, sub-second startup. |
 | **MCP server** | **TypeScript**, official MCP SDK, **Streamable HTTP** transport, runs as a docker-compose service. Thin adapter → backend REST. |
-| **Frontend** | **React + Vite + TypeScript + Tailwind**, **Kanban board** (columns = states, drag to change state). Description: rendered markdown + plain-textarea edit. |
+| **Frontend** | **React + Vite + TypeScript + Tailwind**, **Kanban board** (columns = states, drag to change state). The `archived` column/projects are hidden behind a "Show archived" toggle. Description: rendered markdown + plain-textarea edit. |
 | **Network/auth** | No auth. **nginx** (frontend container) serves the static UI and reverse-proxies `/api/*` to the backend over the compose network — single origin, no CORS, backend port unpublished. MCP reaches backend internally. |
 | **Storage config** | `VAULT_PATH` in `.env`, bind-mounted into the **backend only** at `/vault`. Point Obsidian at the same host folder. |
 | **Tests** | Per-component (backend JUnit5 unit + integration on temp vault; frontend Vitest + RTL; MCP tool→REST tests) **+ one Playwright e2e** over the running compose stack. |

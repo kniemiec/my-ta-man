@@ -14,7 +14,8 @@ public enum TaskState {
     IN_PROGRESS("in-progress"),
     BLOCKED("blocked"),
     IN_REVIEW("in-review"),
-    COMPLETED("completed");
+    COMPLETED("completed"),
+    ARCHIVED("archived");
 
     private final String wire;
 

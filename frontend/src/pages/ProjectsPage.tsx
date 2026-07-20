@@ -7,6 +7,7 @@ import { ProjectForm } from '../components/ProjectForm';
 
 export function ProjectsPage() {
   const [projects, setProjects] = useState<Project[]>([]);
+  const [showArchived, setShowArchived] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function reload() {
@@ -26,10 +27,22 @@ export function ProjectsPage() {
     reload();
   }
 
+  const visibleProjects = showArchived
+    ? projects
+    : projects.filter((p) => p.state !== 'archived');
+
   return (
     <div className="mx-auto max-w-5xl p-6">
-      <header className="mb-6 flex items-center justify-between">
+      <header className="mb-6 flex items-center justify-between gap-4">
         <h1 className="text-2xl font-bold text-slate-800">Projects</h1>
+        <label className="ml-auto flex items-center gap-2 text-sm text-slate-600">
+          <input
+            type="checkbox"
+            checked={showArchived}
+            onChange={(e) => setShowArchived(e.target.checked)}
+          />
+          Show archived
+        </label>
         <Link to="/inbox" className="text-sm font-medium text-sky-700 hover:underline">
           Inbox →
         </Link>
@@ -42,11 +55,15 @@ export function ProjectsPage() {
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {projects.map((p) => (
+        {visibleProjects.map((p) => (
           <ProjectCard key={p.id} project={p} />
         ))}
-        {projects.length === 0 && !error && (
-          <p className="text-slate-400">No projects yet. Create one to get started.</p>
+        {visibleProjects.length === 0 && !error && (
+          <p className="text-slate-400">
+            {projects.length === 0
+              ? 'No projects yet. Create one to get started.'
+              : 'No active projects — toggle “Show archived” to see archived ones.'}
+          </p>
         )}
       </div>
     </div>

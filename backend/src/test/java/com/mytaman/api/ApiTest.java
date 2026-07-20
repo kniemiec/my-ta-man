@@ -79,6 +79,12 @@ class ApiTest {
         assertEquals("Fix in review.", progressed.json().get("progress"));
         assertEquals("Throws a 500.", progressed.json().get("description"));
 
+        // Patch state -> archived, persisted to frontmatter
+        Response archived = patch("/api/tasks/" + taskId, Map.of("state", "archived"));
+        assertEquals(200, archived.status());
+        assertEquals("archived", archived.json().get("state"));
+        assertTrue(Files.readString(file).contains("state: archived"));
+
         // List tasks by project
         Response list = get("/api/tasks?project=" + projectId);
         assertEquals(200, list.status());
@@ -103,6 +109,14 @@ class ApiTest {
     @Test
     void blankNameReturns400() throws Exception {
         assertEquals(400, post("/api/tasks", Map.of("name", "  ")).status());
+    }
+
+    @Test
+    void unknownStateReturns400() throws Exception {
+        Response task = post("/api/tasks", Map.of("name", "State test"));
+        assertEquals(201, task.status());
+        String id = (String) task.json().get("id");
+        assertEquals(400, patch("/api/tasks/" + id, Map.of("state", "bogus")).status());
     }
 
     // --- HTTP helpers ---

@@ -9,6 +9,7 @@ const TASK_STATE = z.enum([
   'blocked',
   'in-review',
   'completed',
+  'archived',
 ]);
 
 export function registerTaskTools(server: McpServer, client: BackendClient) {
